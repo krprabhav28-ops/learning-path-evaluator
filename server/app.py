@@ -1,24 +1,24 @@
-[project]
-name = "learning-path-evaluator"
-version = "0.1.0"
-description = "AI environment for evaluating student learning paths"
-authors = [{ name = "Prabhav" }]
-readme = "README.md"
-requires-python = ">=3.9"
+from fastapi import FastAPI
+from environment import LearningPathEvaluator
 
-dependencies = [
-    "fastapi",
-    "uvicorn",
-    "openai",
-    "openenv-core>=0.2.0"
-]
+app = FastAPI()
+env = LearningPathEvaluator()
 
-[project.scripts]
-server = "server.app:app"
+@app.get("/")
+def home():
+    return {"message": "API running 🚀"}
 
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+@app.post("/reset")
+def reset():
+    env.current_task = "easy"   # IMPORTANT
+    message = env.reset()
+    return {"message": message}
 
-[tool.setuptools]
-py-modules = ["environment", "inference"]
+@app.post("/step")
+def step(action: dict):
+    result = env.step(action)   # FIXED
+    return result
+
+@app.get("/state")
+def state():
+    return env.state()
