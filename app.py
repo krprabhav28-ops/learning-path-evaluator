@@ -4,10 +4,15 @@ from environment import LearningPathEvaluator
 app = FastAPI()
 env = LearningPathEvaluator()
 
+@app.get("/")
+def home():
+    return {"message": "API running 🚀"}
+
 @app.post("/reset")
 def reset():
+    env.current_task = "easy"
     message = env.reset()
-    return{"message": message}
+    return {"message": message}
 
 @app.post("/step")
 def step(action: dict):
