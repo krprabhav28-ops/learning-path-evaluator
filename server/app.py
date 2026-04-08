@@ -10,15 +10,25 @@ def home():
 
 @app.post("/reset")
 def reset():
-    env.current_task = "easy"   # IMPORTANT
+    env.current_task = "easy"
     message = env.reset()
     return {"message": message}
 
 @app.post("/step")
 def step(action: dict):
-    result = env.step(action)   # FIXED
+    result = env.step(action)
     return result
 
 @app.get("/state")
 def state():
     return env.state()
+
+
+# ✅ REQUIRED FOR OPENENV
+def main():
+    import uvicorn
+    uvicorn.run("server.app:app", host="0.0.0.0", port=7860)
+
+
+if __name__ == "__main__":
+    main()
