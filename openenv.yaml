@@ -1,0 +1,11 @@
+name: learning-path-evaluator
+version: "1.0.0"
+description: An environment where an AI agent evaluates student learning paths and identifies gaps in study order.
+author: Prabhav
+tasks:
+  - name: easy
+    difficulty: easy
+  - name: medium
+    difficulty: medium
+  - name: hard
+    difficulty: hard
