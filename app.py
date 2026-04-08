@@ -11,7 +11,7 @@ def reset():
 
 @app.post("/step")
 def step(action: dict):
-    result = env.step()
+    result = env.step(action)
     return result
 
 @app.get("/state")
