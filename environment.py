@@ -48,13 +48,6 @@ class LearningPathEvaluator:
                 "feedback": "Agent answered: " + str(action["agent_answer"])
             }
 
-        else:
-            return {
-            "score": 0.0,
-            "done": True,
-            "feedback": "Unknown task"
-            }
-
     def state(self):
         return {
             "current task": self.current_task,
@@ -69,9 +62,9 @@ class LearningPathEvaluator:
             correct_answer = "off track"
 
         if agent_answer == correct_answer:
-            return 1.0
+            return 0.9
         else:
-            return 0.0
+            return 0.1
         
     def grade_medium(self, student_log, target, agent_answer):
         target_index = CORRECT_ORDER.index(target)
@@ -79,14 +72,14 @@ class LearningPathEvaluator:
         missing_topics = [t for t in required_topics if t not in student_log] # if there is any topic in required_topics that's not in student log, add that to missing_topics
 
         if len(missing_topics) == 0:
-            return 1.0
+            return 0.9
         
         if (agent_answer == missing_topics):
-            return 1.0
+            return 0.9
         elif any(topic in agent_answer for topic in missing_topics): #if any of the missing topics appear somewhere in the agent's answer — even if not all of them — return 0.5.
             return 0.5
         else:
-            return 0.0
+            return 0.1
         
     def grade_hard(self, student_log, target, agent_answer):
         target_index = CORRECT_ORDER.index(target)
@@ -94,11 +87,11 @@ class LearningPathEvaluator:
         missing_topics = [t for t in required_topics if t not in student_log] 
         out_of_order = [t for t in student_log if CORRECT_ORDER.index(t) > target_index]
 
-        score = 0.0
+        score = 0.1
         if missing_topics and any(t in agent_answer for t in missing_topics):
-            score += 0.5
+            score += 0.4
         if out_of_order and any(t in agent_answer for t in out_of_order):
-            score += 0.5
+            score += 0.4
 
         return score
     
