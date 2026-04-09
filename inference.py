@@ -1,10 +1,14 @@
 import os
+import ast
 from openai import OpenAI
 from environment import LearningPathEvaluator
 
-API_BASE_URL = os.environ.get("API_BASE_URL")
-MODEL_NAME = os.environ.get("MODEL_NAME")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "dummy")
+API_BASE_URL = os.environ.get("API_BASE_URL") or "https://api.openai.com/v1"
+MODEL_NAME = os.environ.get("MODEL_NAME") or "gpt-4o-mini"
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY is not set")
 
 client = OpenAI(
     base_url=API_BASE_URL,
@@ -61,7 +65,7 @@ Return ONLY a Python list like ["topic1", "topic2"].
 answer = ask_llm(prompt)
 
 try:
-    parsed_answer = eval(answer)
+    parsed_answer = ast.literal_eval(answer)
 except:
     parsed_answer = []
 
@@ -93,7 +97,7 @@ Return as a Python list.
 answer = ask_llm(prompt)
 
 try:
-    parsed_answer = eval(answer)
+    parsed_answer = ast.literal_eval(answer)
 except:
     parsed_answer = []
 
