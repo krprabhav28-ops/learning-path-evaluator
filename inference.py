@@ -3,12 +3,12 @@ import ast
 from openai import OpenAI
 from environment import LearningPathEvaluator
 
-API_BASE_URL = os.environ.get("API_BASE_URL") or "https://api.openai.com/v1"
-MODEL_NAME = os.environ.get("MODEL_NAME") or "gpt-4o-mini"
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+API_BASE_URL = os.environ.get("API_BASE_URL") or "https://router.huggingface.co/v1"
+MODEL_NAME = os.environ.get("MODEL_NAME") or "Qwen/Qwen2.5-72B-Instruct"
+OPENAI_API_KEY = os.environ.get("HF_TOKEN")
 
 if not OPENAI_API_KEY:
-    raise ValueError("OPENAI_API_KEY is not set")
+    raise ValueError("HF_TOKEN is not set")
 
 client = OpenAI(
     base_url=API_BASE_URL,
@@ -32,12 +32,16 @@ env.reset()
 env.current_task = "easy"
 print(f"[START] task=easy env=learning-path-evaluator model={MODEL_NAME}")
 
-prompt = """
+prompt = f"""
 Student log: ["arrays", "linked lists", "stacks"]
 Target: trees
+Correct order is: arrays, linked lists, stacks, trees, graphs, dynamic programming.
 
-Is the student on track? Answer ONLY: on track or off track.
+Has the student completed all prerequisites before trees in the correct order?
+Answer ONLY with exactly: on track
+or exactly: off track
 """
+
 answer = ask_llm(prompt)
 
 result = env.step({
@@ -55,13 +59,17 @@ env.reset()
 env.current_task = "medium"
 print(f"[START] task=medium env=learning-path-evaluator model={MODEL_NAME}")
 
-prompt = """
+prompt = f"""
 Student log: ["arrays", "stacks"]
 Target: trees
+Correct order is: arrays, linked lists, stacks, trees, graphs, dynamic programming.
+Prerequisites for trees are: arrays, linked lists, stacks.
 
-Which prerequisite topics are missing?
-Return ONLY a Python list like ["topic1", "topic2"].
+Which topics from the prerequisites list are missing from the student log?
+Return ONLY a Python list. Example: ["linked lists"]
+No explanation. Just the list.
 """
+
 answer = ask_llm(prompt)
 
 try:
@@ -84,16 +92,17 @@ env.reset()
 env.current_task = "hard"
 print(f"[START] task=hard env=learning-path-evaluator model={MODEL_NAME}")
 
-prompt = """
+prompt = f"""
 Student log: ["arrays", "dynamic programming", "arrays", "linked lists"]
 Target: trees
+Correct order is: arrays, linked lists, stacks, trees, graphs, dynamic programming.
+Prerequisites for trees are: arrays, linked lists, stacks.
 
-Identify:
-1. Missing prerequisite topics
-2. Topics studied out of order
-
-Return as a Python list.
+Find topics that appear in the log but are beyond trees in the correct order (out of order).
+Return ONLY a Python list of out-of-order topics. Example: ["dynamic programming"]
+No explanation. Just the list.
 """
+
 answer = ask_llm(prompt)
 
 try:
